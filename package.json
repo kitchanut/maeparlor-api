@@ -1,0 +1,31 @@
+{
+  "name": "maeparlor-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "prisma generate",
+    "reset": "prisma migrate reset",
+    "deploy": "prisma migrate deploy",
+    "status": "prisma migrate status"
+  },
+  "keywords": [],
+  "author": "Kitchanut Ruamboon",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.19.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.4",
+    "path": "^0.12.7",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.0"
+  }
+}

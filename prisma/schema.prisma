@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
+}
+
+// generator erd {
+//   provider = "prisma-erd-generator"
+// }
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  name     String
+  password String
+  level    String
+  status   String
+}
+
+model Guide {
+  id         Int       @id @default(autoincrement())
+  name       String
+  dicription String?
+  image      String?
+  status     String
+  Service    Service[]
+}
+
+model Provider {
+  id         Int       @id @default(autoincrement())
+  name       String
+  dicription String?
+  image      String?
+  status     String
+  Service    Service[]
+}
+
+model Service {
+  id              Int               @id @default(autoincrement())
+  guideId         Int?
+  providerId      Int?
+  name            String
+  dicription      String?
+  unit            String
+  price           Int
+  image           String?
+  status          String
+  createdAt       DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime          @updatedAt
+  guide           Guide?            @relation(fields: [guideId], references: [id])
+  provider        Provider?         @relation(fields: [providerId], references: [id])
+  ServiceTimeLine ServiceTimeLine[]
+}
+
+model ServiceTimeLine {
+  id         Int      @id @default(autoincrement())
+  serviceId  Int
+  title      String
+  dicription String?
+  color      String?
+  createdAt  DateTime @default(now()) @db.Timestamp(0)
+  Service    Service  @relation(fields: [serviceId], references: [id])
+}
+
+model Upload {
+  id        Int      @id @default(autoincrement())
+  serviceId Int?
+  type      String
+  file_name String
+  extension String?
+  size      Int      @default(0)
+  file_path String
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+}
