@@ -24,7 +24,7 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
     size: file.size,
     file_path: file.path,
   }));
-  const createdFiles = await prisma.uploads.createMany({
+  const createdFiles = await prisma.upload.createMany({
     data: fileData,
   });
   res.status(200).json({
@@ -36,16 +36,16 @@ router.get("/", async (req, res) => {
   // get parameter from query string
   const { id, type } = req.query;
   try {
-    const uploads = await prisma.uploads.findMany({
+    const upload = await prisma.upload.findMany({
       where: {
         ...(type == "car" && { car_id: parseInt(id) }),
         type: type,
       },
     });
-    res.json(uploads);
+    res.json(upload);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while fetching uploads." });
+    res.status(500).json({ error: "An error occurred while fetching upload." });
   }
 });
 
@@ -54,7 +54,7 @@ router.delete("/:id", async (req, res) => {
 
   try {
     // Find the file in the database
-    const fileRecord = await prisma.uploads.findUnique({
+    const fileRecord = await prisma.upload.findUnique({
       where: { id: fileId },
     });
 
@@ -71,7 +71,7 @@ router.delete("/:id", async (req, res) => {
       }
 
       // Delete the record from the database
-      await prisma.uploads.delete({
+      await prisma.upload.delete({
         where: { id: fileId },
       });
 

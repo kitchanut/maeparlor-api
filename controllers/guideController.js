@@ -6,57 +6,57 @@ const prisma = new PrismaClient();
 // Upload
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
-// Get all Guide
+// Get all guide
 router.get("/", async (req, res) => {
   try {
-    const Guide = await prisma.Guide.findMany();
-    res.json(Guide);
+    const guide = await prisma.guide.findMany();
+    res.json(guide);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching Guide." });
+    res.status(500).json({ error: "An error occurred while fetching guide." });
   }
 });
 
-// Get a Guide by ID
+// Get a guide by ID
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const Guide = await prisma.Guide.findUnique({ where: { id: parseInt(id) } });
-    if (Guide) {
-      res.json(Guide);
+    const guide = await prisma.guide.findUnique({ where: { id: parseInt(id) } });
+    if (guide) {
+      res.json(guide);
     } else {
-      res.status(404).json({ error: "Guide not found" });
+      res.status(404).json({ error: "guide not found" });
     }
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching the Guide." });
+    res.status(500).json({ error: "An error occurred while fetching the guide." });
   }
 });
 
-// Create a new Guide
+// Create a new guide
 router.post("/", uploadMiddleware({}), async (req, res) => {
   const data = req.body;
   const files = req.files;
   try {
-    const new_Guide = await prisma.Guide.create({
+    const new_guide = await prisma.guide.create({
       data: {
         name: data.name,
         status: data.status,
         ...(files.length && { image: files[0].path }),
       },
     });
-    res.status(201).json(new_Guide);
+    res.status(201).json(new_guide);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while creating the Guide." });
+    res.status(500).json({ error: "An error occurred while creating the guide." });
   }
 });
 
-// Update a Guide
+// Update a guide
 router.post("/:id", uploadMiddleware({}), async (req, res) => {
   const { id } = req.params;
   const data = req.body;
   const files = req.files;
   try {
-    const updated_Guide = await prisma.guide.update({
+    const updated_guide = await prisma.guide.update({
       where: { id: parseInt(id) },
       data: {
         name: data.name,
@@ -64,18 +64,18 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
         ...(files.length && { image: files[0].path }),
       },
     });
-    res.json(updated_Guide);
+    res.json(updated_guide);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while updating the Guide." });
+    res.status(500).json({ error: "An error occurred while updating the guide." });
   }
 });
 
-// Delete a Guide
+// Delete a guide
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    await prisma.Guide.delete({
+    await prisma.guide.delete({
       where: {
         id: Number(id),
       },
@@ -83,7 +83,7 @@ router.delete("/:id", async (req, res) => {
     res.status(200).end();
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while deleting the Guide." });
+    res.status(500).json({ error: "An error occurred while deleting the guide." });
   }
 });
 

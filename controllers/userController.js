@@ -10,14 +10,14 @@ const prisma = new PrismaClient({
   },
 });
 
-// Get all User
+// Get all user
 router.get("/", async (req, res) => {
   try {
-    const User = await prisma.User.findMany();
-    res.json(User);
+    const user = await prisma.user.findMany();
+    res.json(user);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while fetching User." });
+    res.status(500).json({ error: "An error occurred while fetching user." });
   }
 });
 
@@ -25,13 +25,13 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: parseInt(id) },
     });
     if (user) {
       res.json(user);
     } else {
-      res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "user not found" });
     }
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching the user." });
@@ -41,26 +41,26 @@ router.get("/:id", async (req, res) => {
 // Create a new user
 router.post("/", async (req, res) => {
   let data = req.body;
-  // const user = await await prisma.User.findUnique({
+  // const user = await await prisma.user.findUnique({
   //   where: {
   //     email: data.email,
   //   },
   // });
   // if (user) {
-  //   return res.status(422).json({ message: "User already exists" });
+  //   return res.status(422).json({ message: "user already exists" });
   // } else {
   //   data.password = await bcrypt.hash(data.password, 10);
-  //   const new_User = await prisma.User.create({
+  //   const new_user = await prisma.user.create({
   //     data: data,
   //   });
-  //   return res.status(201).json(new_User);
+  //   return res.status(201).json(new_user);
   // }
   try {
     data.password = await bcrypt.hash(data.password, 10);
-    const new_User = await prisma.User.create({
+    const new_user = await prisma.user.create({
       data: data,
     });
-    return res.status(201).json(new_User);
+    return res.status(201).json(new_user);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "An error occurred while creating the user." });
@@ -75,11 +75,11 @@ router.put("/:id", async (req, res) => {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
-    const updatedUser = await prisma.User.update({
+    const updateduser = await prisma.user.update({
       where: { id: parseInt(id) },
       data: data,
     });
-    res.json(updatedUser);
+    res.json(updateduser);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while updating the user." });
   }
@@ -89,7 +89,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    await prisma.User.delete({ where: { id: parseInt(id) } });
+    await prisma.user.delete({ where: { id: parseInt(id) } });
     res.status(200).end();
   } catch (error) {
     res.status(500).json({ error: "An error occurred while deleting the user." });

@@ -8,37 +8,37 @@ const fs = require("fs");
 // Upload
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
-// Get all Service
+// Get all service
 router.get("/", async (req, res) => {
   const { guideId } = req.query;
   try {
-    const Service = await prisma.Service.findMany({
+    const service = await prisma.service.findMany({
       where: {
         ...(guideId && { guideId: parseInt(guideId) }),
       },
     });
-    res.json(Service);
+    res.json(service);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching Service." });
+    res.status(500).json({ error: "An error occurred while fetching service." });
   }
 });
 
-// Get a Service by ID
+// Get a service by ID
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const Service = await prisma.Service.findUnique({ where: { id: parseInt(id) } });
-    if (Service) {
-      res.json(Service);
+    const service = await prisma.service.findUnique({ where: { id: parseInt(id) } });
+    if (service) {
+      res.json(service);
     } else {
-      res.status(404).json({ error: "Service not found" });
+      res.status(404).json({ error: "service not found" });
     }
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching the Service." });
+    res.status(500).json({ error: "An error occurred while fetching the service." });
   }
 });
 
-// Create a new Service
+// Create a new service
 router.post("/", uploadMiddleware({}), async (req, res) => {
   const data = req.body;
   data.guideId ? (data.guideId = parseInt(data.guideId)) : null;
@@ -50,23 +50,23 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
     data.image = files[0].path;
   }
   try {
-    const new_Service = await prisma.Service.create({
+    const new_service = await prisma.service.create({
       data,
     });
-    res.status(201).json(new_Service);
+    res.status(201).json(new_service);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while creating the Service." });
+    res.status(500).json({ error: "An error occurred while creating the service." });
   }
 });
 
-// Update a Service
+// Update a service
 router.post("/:id", uploadMiddleware({}), async (req, res) => {
   const { id } = req.params;
   const data = req.body;
   const files = req.files;
   try {
-    const updated_Service = await prisma.Service.update({
+    const updated_service = await prisma.service.update({
       where: { id: parseInt(id) },
       data: {
         name: data.name,
@@ -74,27 +74,27 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
         ...(files.length && { image: files[0].path }),
       },
     });
-    res.json(updated_Service);
+    res.json(updated_service);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while updating the Service." });
+    res.status(500).json({ error: "An error occurred while updating the service." });
   }
 });
 
-// Delete a Service
+// Delete a service
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   console.log(id);
 
   try {
-    const Service = await prisma.Service.findUnique({ where: { id: parseInt(id) } });
-    fs.unlink(path.join(path.resolve(__dirname, ".."), Service.image), async (err) => {
+    const service = await prisma.service.findUnique({ where: { id: parseInt(id) } });
+    fs.unlink(path.join(path.resolve(__dirname, ".."), service.image), async (err) => {
       err ? console.log(err) : "";
-      await prisma.Service.delete({ where: { id: Number(id) } });
+      await prisma.service.delete({ where: { id: Number(id) } });
       res.status(200).end();
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while deleting the Service." });
+    res.status(500).json({ error: "An error occurred while deleting the service." });
   }
 });
 
