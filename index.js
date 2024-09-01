@@ -11,7 +11,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Routes
 app.get("/", async (req, res) => {
   res.json({
-    message: "Welcome to the PS-Car-Rental REST API",
+    message: "Welcome to the Maeparlor API",
   });
 });
 

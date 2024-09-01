@@ -56,7 +56,7 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
   const data = req.body;
   const files = req.files;
   try {
-    const updated_Guide = await prisma.Guide.update({
+    const updated_Guide = await prisma.guide.update({
       where: { id: parseInt(id) },
       data: {
         name: data.name,
