@@ -15,12 +15,23 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  password String
-  level    String
-  status   String
+  id              Int       @id @default(autoincrement())
+  guideId         Int?
+  providerId      Int?
+  email           String    @unique
+  name            String
+  password        String
+  tel             String?
+  level           String
+  lineUserId      String?
+  lineDisplayName String?
+  linePictureUrl  String?
+  createdAt       DateTime? @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime? @updatedAt
+  status          String
+  guide           Guide?    @relation(fields: [guideId], references: [id])
+  provider        Provider? @relation(fields: [providerId], references: [id])
+  Cart            Cart[]
 }
 
 model Guide {
@@ -30,6 +41,8 @@ model Guide {
   image      String?
   status     String
   Service    Service[]
+  User       User[]
+  Cart       Cart[]
 }
 
 model Provider {
@@ -39,6 +52,8 @@ model Provider {
   image      String?
   status     String
   Service    Service[]
+  User       User[]
+  Cart       Cart[]
 }
 
 model Service {
@@ -46,9 +61,14 @@ model Service {
   guideId         Int?
   providerId      Int?
   name            String
-  dicription      String?
-  unit            String
+  specifyDate     Int               @default(0)
+  specifyTime     Int               @default(0)
   price           Int
+  priceUnit       String
+  priceType       String?
+  period          Int
+  periodUnit      String
+  dicription      String?
   image           String?
   status          String
   createdAt       DateTime          @default(now()) @db.Timestamp(0)
@@ -56,6 +76,7 @@ model Service {
   guide           Guide?            @relation(fields: [guideId], references: [id])
   provider        Provider?         @relation(fields: [providerId], references: [id])
   ServiceTimeLine ServiceTimeLine[]
+  Cart            Cart[]
 }
 
 model ServiceTimeLine {
@@ -66,6 +87,25 @@ model ServiceTimeLine {
   color      String?
   createdAt  DateTime @default(now()) @db.Timestamp(0)
   Service    Service  @relation(fields: [serviceId], references: [id])
+}
+
+model Cart {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  serviceId  Int
+  guideId    Int?
+  providerId Int?
+  quantity   Int
+  price      Int
+  totalPrice Int
+  date       DateTime?
+  status     String
+  createdAt  DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt  DateTime  @updatedAt
+  User       User      @relation(fields: [userId], references: [id])
+  Service    Service   @relation(fields: [serviceId], references: [id])
+  guide      Guide?    @relation(fields: [guideId], references: [id])
+  provider   Provider? @relation(fields: [providerId], references: [id])
 }
 
 model Upload {

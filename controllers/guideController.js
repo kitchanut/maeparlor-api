@@ -39,6 +39,7 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
     const new_guide = await prisma.guide.create({
       data: {
         name: data.name,
+        dicription: data.dicription,
         status: data.status,
         ...(files.length && { image: files[0].path }),
       },
@@ -60,6 +61,7 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         name: data.name,
+        dicription: data.dicription,
         status: data.status,
         ...(files.length && { image: files[0].path }),
       },

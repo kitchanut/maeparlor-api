@@ -44,6 +44,9 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
   data.guideId ? (data.guideId = parseInt(data.guideId)) : null;
   data.providerId ? (data.providerId = parseInt(data.providerId)) : null;
   data.price = parseInt(data.price);
+  data.period = parseInt(data.period);
+  data.specifyDate = parseInt(data.specifyDate);
+  data.specifyTime = parseInt(data.specifyTime);
   delete data.location;
   const files = req.files;
   if (files.length) {
@@ -63,16 +66,21 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
 // Update a service
 router.post("/:id", uploadMiddleware({}), async (req, res) => {
   const { id } = req.params;
+
   const data = req.body;
+  data.guideId ? (data.guideId = parseInt(data.guideId)) : null;
+  data.providerId ? (data.providerId = parseInt(data.providerId)) : null;
+  data.price = parseInt(data.price);
+  data.period = parseInt(data.period);
+  data.specifyDate = parseInt(data.specifyDate);
+  data.specifyTime = parseInt(data.specifyTime);
+  delete data.location;
+
   const files = req.files;
   try {
     const updated_service = await prisma.service.update({
       where: { id: parseInt(id) },
-      data: {
-        name: data.name,
-        status: data.status,
-        ...(files.length && { image: files[0].path }),
-      },
+      data,
     });
     res.json(updated_service);
   } catch (error) {
@@ -83,15 +91,15 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
 // Delete a service
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  console.log(id);
-
   try {
     const service = await prisma.service.findUnique({ where: { id: parseInt(id) } });
-    fs.unlink(path.join(path.resolve(__dirname, ".."), service.image), async (err) => {
-      err ? console.log(err) : "";
-      await prisma.service.delete({ where: { id: Number(id) } });
-      res.status(200).end();
-    });
+    if (service.image) {
+      fs.unlink(path.join(path.resolve(__dirname, ".."), service.image), (err) => {
+        err ? console.log(err) : "";
+      });
+    }
+    await prisma.service.delete({ where: { id: Number(id) } });
+    res.status(200).end();
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred while deleting the service." });

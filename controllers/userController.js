@@ -41,20 +41,6 @@ router.get("/:id", async (req, res) => {
 // Create a new user
 router.post("/", async (req, res) => {
   let data = req.body;
-  // const user = await await prisma.user.findUnique({
-  //   where: {
-  //     email: data.email,
-  //   },
-  // });
-  // if (user) {
-  //   return res.status(422).json({ message: "user already exists" });
-  // } else {
-  //   data.password = await bcrypt.hash(data.password, 10);
-  //   const new_user = await prisma.user.create({
-  //     data: data,
-  //   });
-  //   return res.status(201).json(new_user);
-  // }
   try {
     data.password = await bcrypt.hash(data.password, 10);
     const new_user = await prisma.user.create({
