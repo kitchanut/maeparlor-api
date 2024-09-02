@@ -77,6 +77,9 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
   delete data.location;
 
   const files = req.files;
+  if (files.length) {
+    data.image = files[0].path;
+  }
   try {
     const updated_service = await prisma.service.update({
       where: { id: parseInt(id) },
