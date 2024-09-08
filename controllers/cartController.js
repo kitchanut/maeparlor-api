@@ -19,9 +19,9 @@ router.get("/", async (req, res) => {
       },
       include: {
         guide: true,
-        provider: true,
         Service: true,
         User: true,
+        Payment: true,
       },
     });
     res.json(cart);
@@ -35,7 +35,14 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const cart = await prisma.cart.findUnique({ where: { id: parseInt(id) } });
+    const cart = await prisma.cart.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      include: {
+        guide: true,
+      },
+    });
     if (cart) {
       res.json(cart);
     } else {
@@ -50,7 +57,17 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const data = req.body;
   try {
+    const service = await prisma.service.findUnique({ where: { id: parseInt(data.serviceId) } });
+    if (!service) {
+      return res.status(404).json({ error: "Service not found" });
+    }
     data.date ? (data.date = new Date(data.date).toISOString()) : null;
+    data.name = service.name;
+    data.price = service.price;
+    data.priceUnit = service.priceUnit;
+    data.priceType = service.priceType;
+    data.period = service.period;
+    data.periodUnit = service.periodUnit;
     const new_cart = await prisma.cart.create({
       data: data,
     });

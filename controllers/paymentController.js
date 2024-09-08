@@ -11,35 +11,38 @@ const prisma = new PrismaClient();
 router.post("/", uploadMiddleware({}), async (req, res) => {
   const files = req.files;
   const fileData = files.map((file, index) => ({
-    ...(req.body.travelId && { travelId: parseInt(req.body.travelId) }),
-    type: req.body.type,
-    file_name: Buffer.from(file.originalname, "latin1").toString("utf8"),
-    extension: file.mimetype,
-    size: file.size,
-    file_path: file.path,
+    cartId: parseInt(req.body.cartId),
+    image: file.path,
   }));
-  const createdFiles = await prisma.upload.createMany({
+  const createdFiles = await prisma.payment.createMany({
     data: fileData,
   });
-  res.status(200).json({
-    url: createdFiles[0].file_path,
+  await prisma.cart.update({
+    where: {
+      id: parseInt(req.body.cartId),
+    },
+    data: {
+      status: "pendingConfirmPayment",
+    },
+  });
+  res.status(201).json({
+    message: "Payment uploaded successfully",
   });
 });
 
 router.get("/", async (req, res) => {
-  // get parameter from query string
   const { id, type } = req.query;
   try {
-    const upload = await prisma.upload.findMany({
+    const payment = await prisma.payment.findMany({
       where: {
         ...(type == "travel" && { travelId: parseInt(id) }),
         type: type,
       },
     });
-    res.json(upload);
+    res.json(payment);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while fetching upload." });
+    res.status(500).json({ error: "An error occurred while fetching payment." });
   }
 });
 
@@ -47,8 +50,7 @@ router.delete("/:id", async (req, res) => {
   const fileId = parseInt(req.params.id);
 
   try {
-    // Find the file in the database
-    const fileRecord = await prisma.upload.findUnique({
+    const fileRecord = await prisma.payment.findUnique({
       where: { id: fileId },
     });
 
@@ -56,16 +58,25 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "File not found" });
     }
 
+    await prisma.cart.update({
+      where: {
+        id: parseInt(fileRecord.cartId),
+      },
+      data: {
+        status: "pendingPayment",
+      },
+    });
+
     // Delete the file from the file system
     const projectRoot = path.resolve(__dirname, "..");
-    fs.unlink(path.join(projectRoot, fileRecord.file_path), async (err) => {
+    fs.unlink(path.join(projectRoot, fileRecord.image), async (err) => {
       if (err) {
         console.log(err);
         // return res.status(500).json({ message: "Error deleting file from file system", error: err });
       }
 
       // Delete the record from the database
-      await prisma.upload.delete({
+      await prisma.payment.delete({
         where: { id: fileId },
       });
 

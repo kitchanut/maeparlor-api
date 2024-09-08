@@ -8,8 +8,15 @@ const uploadMiddleware = require("../middleware/uploadMiddleware");
 
 // Get all guide
 router.get("/", async (req, res) => {
+  const { role, status } = req.query;
   try {
-    const guide = await prisma.guide.findMany();
+    const guide = await prisma.guide.findMany({
+      where: {
+        ...(role && { role: role }),
+        ...(status && { status: status }),
+      },
+      include: { Review: true },
+    });
     res.json(guide);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching guide." });
@@ -38,8 +45,13 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
   try {
     const new_guide = await prisma.guide.create({
       data: {
+        role: data.role,
         name: data.name,
+        tel: data.tel,
         dicription: data.dicription,
+        bankNumber: data.bankNumber,
+        bankAccount: data.bankAccount,
+        bankName: data.bankName,
         status: data.status,
         ...(files.length && { image: files[0].path }),
       },
@@ -61,7 +73,11 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         name: data.name,
+        tel: data.tel,
         dicription: data.dicription,
+        bankNumber: data.bankNumber,
+        bankAccount: data.bankAccount,
+        bankName: data.bankName,
         status: data.status,
         ...(files.length && { image: files[0].path }),
       },

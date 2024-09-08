@@ -10,11 +10,16 @@ const uploadMiddleware = require("../middleware/uploadMiddleware");
 
 // Get all service
 router.get("/", async (req, res) => {
-  const { guideId } = req.query;
+  const { guideId, status } = req.query;
   try {
     const service = await prisma.service.findMany({
       where: {
         ...(guideId && { guideId: parseInt(guideId) }),
+        ...(status && { status: status }),
+      },
+      include: {
+        guide: true,
+        Review: true,
       },
     });
     res.json(service);

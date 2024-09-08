@@ -15,6 +15,9 @@ const prisma = new PrismaClient({
 router.post("/check_user", async (req, res) => {
   try {
     const data = req.body;
+    if (!data.userId) {
+      return res.status(404).json({ message: "userId is required" });
+    }
     const user = await prisma.user.findUnique({
       where: {
         email: data.userId,
@@ -28,6 +31,10 @@ router.post("/check_user", async (req, res) => {
           lineUserId: data.userId,
           lineDisplayName: data.displayName,
           linePictureUrl: data.pictureUrl,
+        },
+        include: {
+          guide: true,
+          provider: true,
         },
       });
       return res.status(200).json(updateduser);

@@ -29,64 +29,51 @@ model User {
   createdAt       DateTime? @default(now()) @db.Timestamp(0)
   updatedAt       DateTime? @updatedAt
   status          String
-  guide           Guide?    @relation(fields: [guideId], references: [id])
-  provider        Provider? @relation(fields: [providerId], references: [id])
   Cart            Cart[]
+  guide           Guide?    @relation("UserGuide", fields: [guideId], references: [id])
+  provider        Guide?    @relation("UserProvider", fields: [providerId], references: [id])
+  Review          Review[]
 }
 
 model Guide {
-  id         Int       @id @default(autoincrement())
-  name       String
-  dicription String?
-  image      String?
-  status     String
-  Service    Service[]
-  User       User[]
-  Cart       Cart[]
-}
-
-model Provider {
-  id         Int       @id @default(autoincrement())
-  name       String
-  dicription String?
-  image      String?
-  status     String
-  Service    Service[]
-  User       User[]
-  Cart       Cart[]
+  id           Int       @id @default(autoincrement())
+  role         String?
+  name         String
+  dicription   String?
+  image        String?
+  tel          String?
+  bankNumber   String?
+  bankAccount  String?
+  bankName     String?
+  status       String
+  createdAt    DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime  @updatedAt
+  Service      Service[]
+  Cart         Cart[]
+  UserGuide    User[]    @relation("UserGuide")
+  UserProvider User[]    @relation("UserProvider")
+  Review       Review[]
 }
 
 model Service {
-  id              Int               @id @default(autoincrement())
-  guideId         Int?
-  providerId      Int?
-  name            String
-  specifyDate     Int               @default(0)
-  specifyTime     Int               @default(0)
-  price           Int
-  priceUnit       String
-  priceType       String?
-  period          Int
-  periodUnit      String
-  dicription      String?
-  image           String?
-  status          String
-  createdAt       DateTime          @default(now()) @db.Timestamp(0)
-  updatedAt       DateTime          @updatedAt
-  guide           Guide?            @relation(fields: [guideId], references: [id])
-  provider        Provider?         @relation(fields: [providerId], references: [id])
-  ServiceTimeLine ServiceTimeLine[]
-  Cart            Cart[]
-}
-
-model ServiceTimeLine {
-  id         Int      @id @default(autoincrement())
-  serviceId  Int
-  title      String
-  dicription String?
-  color      String?
-  createdAt  DateTime @default(now()) @db.Timestamp(0)
-  Service    Service  @relation(fields: [serviceId], references: [id])
+  id          Int      @id @default(autoincrement())
+  guideId     Int?
+  name        String
+  specifyDate Int      @default(0)
+  specifyTime Int      @default(0)
+  price       Int
+  priceUnit   String
+  priceType   String?
+  period      Int
+  periodUnit  String
+  dicription  String?
+  image       String?
+  status      String
+  createdAt   DateTime @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt
+  guide       Guide?   @relation(fields: [guideId], references: [id])
+  Cart        Cart[]
+  Review      Review[]
 }
 
 model Cart {
@@ -94,9 +81,13 @@ model Cart {
   userId     Int
   serviceId  Int
   guideId    Int?
-  providerId Int?
+  name       String
   quantity   Int
   price      Int
+  priceUnit  String
+  priceType  String
+  period     Int
+  periodUnit String
   totalPrice Int
   date       DateTime?
   status     String
@@ -105,16 +96,63 @@ model Cart {
   User       User      @relation(fields: [userId], references: [id])
   Service    Service   @relation(fields: [serviceId], references: [id])
   guide      Guide?    @relation(fields: [guideId], references: [id])
-  provider   Provider? @relation(fields: [providerId], references: [id])
+  Payment    Payment?
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  cartId    Int      @unique
+  image     String
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt
+  Cart      Cart     @relation(fields: [cartId], references: [id])
 }
 
 model Upload {
   id        Int      @id @default(autoincrement())
-  serviceId Int?
+  travelId  Int?
   type      String
   file_name String
   extension String?
   size      Int      @default(0)
   file_path String
   createdAt DateTime @default(now()) @db.Timestamp(0)
+  travel    Travel?  @relation(fields: [travelId], references: [id])
+}
+
+model Travel {
+  id              Int      @id @default(autoincrement())
+  type            String
+  name            String
+  dicription      String   @db.Text()
+  details         String?  @db.LongText()
+  isOpenMonday    Int      @default(0)
+  isOpenTuesday   Int      @default(0)
+  isOpenWednesday Int      @default(0)
+  isOpenThursday  Int      @default(0)
+  isOpenFriday    Int      @default(0)
+  isOpenSaturday  Int      @default(0)
+  isOpenSunday    Int      @default(0)
+  image           String?
+  status          String
+  createdAt       DateTime @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime @updatedAt
+  Upload          Upload[]
+  Review          Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  guideId   Int?
+  serviceId Int?
+  travelId  Int?
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  guide     Guide?   @relation(fields: [guideId], references: [id])
+  Service   Service? @relation(fields: [serviceId], references: [id])
+  Travel    Travel?  @relation(fields: [travelId], references: [id])
 }
