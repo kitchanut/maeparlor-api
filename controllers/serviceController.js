@@ -73,8 +73,6 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
   const { id } = req.params;
 
   const data = req.body;
-  data.guideId ? (data.guideId = parseInt(data.guideId)) : null;
-  data.providerId ? (data.providerId = parseInt(data.providerId)) : null;
   data.price = parseInt(data.price);
   data.period = parseInt(data.period);
   data.specifyDate = parseInt(data.specifyDate);
