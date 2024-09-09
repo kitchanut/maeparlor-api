@@ -73,6 +73,8 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
   const { id } = req.params;
 
   const data = req.body;
+  // data.guideId ? (data.guideId = parseInt(data.guideId)) : null;
+  // data.providerId ? (data.providerId = parseInt(data.providerId)) : null;
   data.price = parseInt(data.price);
   data.period = parseInt(data.period);
   data.specifyDate = parseInt(data.specifyDate);
@@ -90,6 +92,7 @@ router.post("/:id", uploadMiddleware({}), async (req, res) => {
     });
     res.json(updated_service);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "An error occurred while updating the service." });
   }
 });

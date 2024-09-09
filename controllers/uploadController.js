@@ -22,7 +22,7 @@ router.post("/", uploadMiddleware({}), async (req, res) => {
     data: fileData,
   });
   res.status(200).json({
-    url: createdFiles[0].file_path,
+    message: "Files uploaded successfully",
   });
 });
 
